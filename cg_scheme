@@ -1,0 +1,92 @@
+
+
+source /home/mi/ck69giso/gromacs/bin/GMXRC 
+source /home/mi/ck69giso/votca/bin/VOTCARC.bash 
+
+---------------------
+INSTALLATION of fftw3
+---------------------
+cd fftw-3.3.4/
+./configure --prefix /home/mi/ck69giso/.local/ --with-pic
+make install
+./configure --prefix /home/mi/ck69giso/.local/ --with-pic -lpthreads
+cmake .. -DGMX_BUILD_OWN_FFTW=ON
+make 
+make install
+--------------------
+
+---------------------
+INSTALLATION of VOTCA
+---------------------
+./build.sh --prefix /home/mi/ck69giso/votca -DFFTW3_LIBRARY=/home/mi/ck69giso/.local/lib/libfftw3.a -DFFTW3_INCLUDE_DIR=/home/mi/ck69giso/.local/include -DWITH_SQLITE3=OFF  tools csg
+cmake .. -DGMX_BUILD_OWN_FFTW=ON -DCMAKE_INSTALL_PREFIX=/home/mi/ck69giso/gromacs
+---------------------
+
+--------------------
+cd $WORKDIR
+--------------
+CK: EDIT HERE
+--------------
+vi combine.cg.py 
+vi at.100ns.mdp 
+#vi spc.itp spc.adress.itp 
+vi table.xvg
+vi table_${CG_name}_${CG_name}.xvg
+vi sol.mapping.xml 
+vi table.xvg
+vi sol.mapping.xml 
+vi topol.top 
+vi topol_cg.top 
+--------------
+
+source ~/votca/bin/VOTCARC.bash 
+source /home/mi/ck69giso/gromacs/bin/GMXRC 
+
+SETUP of STARTCONFIGURATION
+---------------------------
+/home/mi/ck69giso/packmol/packmol < $inp_file
+cp $pckmol_out conf.gro
+
+grompp -f at.100ns.mdp -c conf.gro -o at.tpr
+csg_dump --top at.tpr
+grompp -f at.100ns.mdp -c atomistic.gro# -o at.tpr
+grompp -f at.100ns.mdp -c atomistic.gro -o at.tpr
+csg_dump --top at.tpr
+
+--------------
+CK: EDIT HERE
+vi topol.top 
+vi grompp.mdp
+vi index.ndx 
+--------------
+
+grompp -f at.100ns.mdp -c atomistic.gro -p topol.top
+mdrun -v
+csg_dump --top topol.tpr
+
+--------------
+CK: EDIT HERE
+vi sol.mapping.xml 
+--------------
+csg_map --top topol.tpr --out cg-test1.gro --cg sol.mapping.xml --trj confout.gro --hybrid
+
+gmx density -s topol.tpr -f traj.xtc -d X
+vi  density.xvg 
+xmgrace density.xvg 
+
+-----------------------
+RUN WITHOUT THERMOFORCE
+-----------------------
+grompp -f grompp.mdp  -c cp_start.gro -n index.ndx -p topol.top 
+mv table_CMW_CMW.xvg table_WCG_WCG.xvg
+mdrun -v
+-----------------------
+
+-----------------------
+RUN WITH THERMOFORCE
+-----------------------
+vi settings.xml
+mv cg_start.gro conf.gro
+csg_inverse --options settings.xml
+-----------------------
+

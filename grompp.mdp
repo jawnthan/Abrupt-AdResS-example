@@ -1,0 +1,96 @@
+; RUN CONTROL PARAMETERS
+integrator               = sd ;stotastic dynamics
+; Start time and timestep in ps
+tinit                    = 0
+dt                       = 0.002
+nsteps                   = 500000
+
+; OUTPUT CONTROL OPTIONS
+; Output frequency for coords (x), velocities (v) and forces (f)
+nstxout                  = 0 ;50
+nstvout                  = 0 ;50
+nstfout                  = 0 ;50
+; Checkpointing helps you continue after crashes
+nstcheckpoint            = 1000
+; Output frequency for energies to log file and energy file
+nstlog                   = 1000
+nstenergy                = 1000
+; Output frequency and precision for xtc file
+nstxtcout                = 1000
+xtc-precision            = 1000
+; This selects the subset of atoms for the xtc file. You can
+; select multiple groups. By default all atoms will be written.
+xtc-grps                 = 
+; Selection of energy groups      (user potential table setup or tag user table gromacs) 
+energygrps               =  EXW WCG
+energygrp_table          =  WCG WCG
+
+; NEIGHBORSEARCHING PARAMETERS
+cutoff-scheme            =  group
+; nblist update frequency
+nstlist                  = 5
+; ns algorithm (simple or grid)
+ns-type                  = Grid
+; Periodic boundary conditions: xyz, no, xy
+pbc                      = xyz
+; nblist cut-off        
+rlist                    = 1.35
+
+; OPTIONS FOR ELECTROSTATICS AND VDW
+; Method for doing electrostatics
+coulombtype              = reaction-field ;reaction-field-zero
+rcoulomb-switch          = 0
+rcoulomb                 = 1.35
+; Dielectric constant (DC) for cut-off or DC of reaction field
+epsilon_r                = 1
+epsilon_rf               = 60
+; Method for doing Van der Waals      (hier werde User tables verwendet)
+vdw-type                 = user
+; cut-off lengths       
+rvdw-switch              = 0
+rvdw                     = 1.35
+; Apply long range dispersion corrections for Energy and Pressure
+DispCorr                 = no
+; Extension of the potential lookup tables beyond the cut-off
+table-extension          = 1
+
+; OPTIONS FOR WEAK COUPLING ALGORITHMS
+; Temperature coupling  
+Tcoupl                   = no
+; Groups to couple separately
+tc-grps                  = System
+; Time constant (ps) and reference temperature (K)
+tau_t                    = 0.1
+ref_t                    = 300
+; Pressure coupling     
+Pcoupl                   = no
+Pcoupltype               = isotropic
+; Time constant (ps), compressibility (1/bar) and reference P (bar)
+tau_p                    = 0.5
+compressibility          = 4.5e-5
+ref_p                    = 1.0
+; Scaling of reference coordinates, No, All or COM
+refcoord_scaling         = No
+; Random seed for Andersen thermostat
+andersen_seed            = 815131
+
+; GENERATE VELOCITIES FOR STARTUP RUN
+gen-vel                  = no
+
+; OPTIONS FOR BONDS    
+constraints              = h-bonds
+
+; AdResS parameters
+adress                   = yes
+adress_type              = xsplit ;shperical or constant
+adress_const_wf          = 1      ;nur für constant  
+adress_ex_width          = 1.5
+adress_hy_width          = 1.5
+adress_ex_forcecap       = 2000
+adress_interface_correction = thermoforce ; off
+adress_site              = com
+adress_reference_coords  = 7.5000 1.860355 1.860355
+adress_tf_grp_names      = WCG 
+adress_cg_grp_names      = WCG 
+adress_do_hybridpairs    = no
+

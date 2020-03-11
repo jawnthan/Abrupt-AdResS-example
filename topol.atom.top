@@ -1,0 +1,12 @@
+; for simulating methane in water.
+; notice the comb-rule 1 is used!!!
+
+#include "gromos53a6.ff/forcefield.itp"
+
+#include "spc.itp"
+
+[ system ]
+pure 
+
+[ molecules ]
+SOL 3456
